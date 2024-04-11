@@ -16,17 +16,17 @@ use Exception;
  * */
 class QC extends Oauth
 {
-    private $keysArr, $APIMap;
+    private array $keysArr, $APIMap;
 
     /**
      * 设置 接口必要参数
      * @access public
      * @param string $access_token access_token value
      * @param string $openid openid value
-     * @return Object QC
+     * @return void QC
      * @since 5
      */
-    public function setKeysArr($access_token, $openid)
+    public function setKeysArr(string $access_token, string $openid)
     {
 
         $this->keysArr = array(
@@ -41,8 +41,6 @@ class QC extends Oauth
          * 规则 array( baseUrl, argListArr, method)
          */
         $this->APIMap = array(
-
-
             /*                       qzone                    */
             "add_blog" => array(
                 "https://graph.qq.com/blog/add_one_blog",
@@ -153,7 +151,7 @@ class QC extends Oauth
      * @return array          返加调用结果数组
      * @since 5.0
      */
-    public function __call($name, $arg)
+    public function __call(string $name, array $arg)
     {
         //如果APIMap不存在相应的api
         if (empty($this->APIMap[$name])) {
@@ -163,7 +161,7 @@ class QC extends Oauth
         //从APIMap获取api相应参数
         $baseUrl = $this->APIMap[$name][0];
         $argsList = $this->APIMap[$name][1];
-        $method = isset($this->APIMap[$name][2]) ? $this->APIMap[$name][2] : "GET";
+        $method = $this->APIMap[$name][2] ?? "GET";
 
         if (empty($arg)) {
             $arg[0] = null;
@@ -184,7 +182,7 @@ class QC extends Oauth
             return $responseArr;
         }
         else {
-            throw new Exception($response->ret, $response->msg);
+            throw new Exception($response->msg);
         }
 
     }
@@ -202,7 +200,7 @@ class QC extends Oauth
             if (!is_string($key)) {
                 $tmpKey = $val;
 
-                if (strpos($val, $pre) === 0) {
+                if (str_starts_with($val, $pre)) {
                     $tmpVal = $pre;
                     $tmpKey = substr($tmpKey, 1);
                     if (preg_match("/-(\d$)/", $tmpKey, $res)) {

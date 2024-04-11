@@ -13,27 +13,27 @@ require_once("Recorder.php");
 
 class Oauth
 {
-    const VERSION = "2.0";
+    // const VERSION = "2.0";
     const GET_AUTH_CODE_URL = "https://graph.qq.com/oauth2.0/authorize";
     const GET_ACCESS_TOKEN_URL = "https://graph.qq.com/oauth2.0/token";
     const GET_OPENID_URL = "https://graph.qq.com/oauth2.0/me";
 
-    public $urlUtils;
-    protected $recorder;
+    public URL $urlUtils;
+    protected Recorder $recorder;
 
-    protected $appid;
-    protected $appkey;
-    protected $callback;
-    protected $scope;
+    protected string $appid;
+    protected string $appkey;
+    protected string $callback;
+    protected string $scope;
 
     /**
      * Oauth constructor.
-     * @param $appid string 应用appid
-     * @param $appkey string 应用appkey
-     * @param $callback string 应用授权回调地址
-     * @param $scope string  申请获取的应用权限，多个以英文逗号相隔
+     * @param string $appid 应用appid
+     * @param string $appkey 应用appkey
+     * @param string $callback 应用授权回调地址
+     * @param string $scope 申请获取的应用权限，多个以英文逗号相隔
      */
-    function __construct($appid, $appkey, $callback, $scope)
+    function __construct(string $appid, string $appkey, string $callback, string $scope)
     {
         $this->recorder = new Recorder();
         $this->appid = $appid;
@@ -49,11 +49,8 @@ class Oauth
     }
 
     /**
-     *
-     * @param $appid string 应用appid
-     * @param $callback string 应用回调地址
-     * @param $scope string 应用申请的授权内容
-     * @return string
+     * @access public
+     * @return string $login_url
      */
     public function qq_login()
     {
@@ -70,11 +67,14 @@ class Oauth
             "scope" => $this->scope
         );
 
-        $login_url = $this->urlUtils->combineURL(self::GET_AUTH_CODE_URL, $keysArr);
-
-        return $login_url;
+        return $this->urlUtils->combineURL(self::GET_AUTH_CODE_URL, $keysArr);
     }
 
+    /**
+     * @access public
+     * @return mixed
+     * @throws Exception
+     */
     public function qq_callback()
     {
 
@@ -97,7 +97,7 @@ class Oauth
         $token_url = $this->urlUtils->combineURL(self::GET_ACCESS_TOKEN_URL, $keysArr);
         $response = $this->urlUtils->get_contents($token_url);
 
-        if (strpos($response, "callback") !== false) {
+        if (str_contains($response, "callback")) {
 
             $lpos = strpos($response, "(");
             $rpos = strrpos($response, ")");
@@ -119,19 +119,24 @@ class Oauth
         return $params["access_token"];
     }
 
+    /**
+     * @access public
+     * @param $access_token
+     * @return mixed
+     * @throws Exception
+     */
     public function get_openid($access_token)
     {
-        //-------请求参数列表
+        // 请求参数列表
         $keysArr = array(
-            "access_token" => $access_token,
-            "unionid" => 1
+            "access_token" => $access_token
         );
 
         $graph_url = $this->urlUtils->combineURL(self::GET_OPENID_URL, $keysArr);
         $response = $this->urlUtils->get_contents($graph_url);
 
-        //--------检测错误是否发生
-        if (strpos($response, "callback") !== false) {
+        // 检测错误是否发生
+        if (str_contains($response, "callback")) {
 
             $lpos = strpos($response, "(");
             $rpos = strrpos($response, ")");
@@ -139,15 +144,15 @@ class Oauth
         }
 
         $user = json_decode($response);
+
         if (isset($user->error)) {
-            throw new Exception($user->error, $user->error_description);
+            throw new Exception($user->error_description);
         }
 
-        //------记录openid
+        // 记录openid
         if (empty($user->openid)) {
             throw new Exception('openid 获取失败');
         }
         return $user->openid;
-
     }
 }

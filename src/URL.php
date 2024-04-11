@@ -27,7 +27,7 @@ class URL
      * @param array $keysArr 参数列表数组
      * @return string         返回的资源内容
      */
-    public function get($url, $keysArr)
+    public function get(string $url, array $keysArr)
     {
         $combined = $this->combineURL($url, $keysArr);
         return $this->get_contents($combined);
@@ -40,7 +40,7 @@ class URL
      * @param array $keysArr 参数列表数组
      * @return string           返回拼接的url
      */
-    public function combineURL($baseURL, $keysArr)
+    public function combineURL(string $baseURL, array $keysArr)
     {
         $combined = $baseURL . "?";
         $valueArr = array();
@@ -61,7 +61,7 @@ class URL
      * @param string $url 请求的url,拼接后的
      * @return string           请求返回的内容
      */
-    public function get_contents($url)
+    public function get_contents(string $url)
     {
         if (ini_get("allow_url_fopen") == "1") {
             $response = file_get_contents($url);
@@ -91,7 +91,7 @@ class URL
      * @param int $flag 标志位
      * @return string           返回的资源内容
      */
-    public function post($url, $keysArr, $flag = 0)
+    public function post(string $url, array $keysArr, int $flag = 0)
     {
 
         $ch = curl_init();

@@ -6,26 +6,13 @@
  */
 
 namespace hafly\qqconnect;
-require_once("ErrorCase.php");
 
 class Recorder
 {
-    private static $data;
-    private $inc;
-    private $error;
+    private static mixed $data;
 
     public function __construct()
     {
-        $this->error = new ErrorCase();
-
-        //-------读取配置文件
-        // $incFileContents = file(dirname(dirname(__FILE__))."/" . "comm/inc.php");
-        // $incFileContents = $incFileContents[1];
-        // $this->inc = json_decode($incFileContents);
-        // if (empty($this->inc)) {
-        //     $this->error->showError("20001");
-        // }
-
         if (empty($_SESSION['QC_userData'])) {
             self::$data = array();
         }
@@ -46,16 +33,6 @@ class Recorder
         }
         else {
             return self::$data[$name];
-        }
-    }
-
-    public function readInc($name)
-    {
-        if (empty($this->inc->$name)) {
-            return null;
-        }
-        else {
-            return $this->inc->$name;
         }
     }
 
