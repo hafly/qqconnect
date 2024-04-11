@@ -1,0 +1,15 @@
+{
+    "name": "hafly/qqconnect",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "hafly\\qqconnect\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "hafly",
+            "email": "188150920@qq.com"
+        }
+    ]
+}
