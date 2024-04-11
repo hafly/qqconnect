@@ -6,6 +6,7 @@
  */
 
 namespace hafly\qqconnect;
+session_start();
 
 class Recorder
 {
